@@ -9,7 +9,7 @@ svnserve_pid() {
 case "$1" in
    start)
       pid=$(svnserve_pid)
-      if [ -n $pid ]
+      if [ -n "$pid" ]
         then
           echo "svnserve for $REPO_ROOT already running with pid: $pid. Started nothing."
         else
@@ -19,7 +19,7 @@ case "$1" in
     	;;
    stop)
       pid=$(svnserve_pid)
-      if [ -n $pid ]
+      if [ -n "$pid" ]
         then
     	    echo -n "Shutting down svnserve for $REPO_ROOT"
         	/bin/su - $USER -c kill $pid
