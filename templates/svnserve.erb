@@ -1,0 +1,47 @@
+#!/bin/sh
+#File: /etc/init.d/svnserve
+REPO_ROOT=<%= @path %>
+SVN_UID=<%= @user %>
+SVN_GID=user
+svnserve_pid() {
+   echo `ps aux | grep "svnserve -d -R -r $REPO_ROOT" | grep -v grep | awk '{ print $2 }'`
+}
+case "$1" in
+   start)
+      pid=$(svnserve_pid)
+      if [ -n $pid ]
+        then
+          echo "svnserve for $REPO_ROOT already running with pid: $pid. Started nothing."
+        else
+         	echo -n "Starting svnserve for $REPO_ROOT"
+          /bin/su - $USER -c "svnserve -d -R -r $REPO_ROOT"
+      fi
+    	;;
+   stop)
+      pid=$(svnserve_pid)
+      if [ -n $pid ]
+        then
+    	    echo -n "Shutting down svnserve for $REPO_ROOT"
+        	/bin/su - $USER -c kill $pid
+        else
+          echo -n "running svnserver for repo $REPO_ROOT not detected. Stopping nothing."
+      fi
+    	;;
+   restart)
+    	$0 stop
+    	$0 start
+    	;;
+   status)
+      pid=$(svrserve_pid)
+      if [ -n "$pid" ]
+        then
+          echo "svnserve for $REPO_ROOT is running with pid: $pid"
+        else
+          echo "svnserver for $REPO_ROOT not detected"
+      fi
+      ;;
+   *)
+    	echo "Usage: $0 {start|stop|restart|status}"
+    	exit 1
+    	;;
+esac
