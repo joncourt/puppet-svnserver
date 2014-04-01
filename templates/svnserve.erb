@@ -3,26 +3,27 @@
 REPO_ROOT=<%= @path %>
 SVN_UID=<%= @user %>
 SVN_GID=user
+START_CMD="svnserve -d"
 svnserve_pid() {
-   echo `ps aux | grep "svnserve -d -R -r $REPO_ROOT" | grep -v grep | awk '{ print $2 }'`
+   echo `ps aux | grep "$START_CMD" | grep -v grep | awk '{ print $2 }'`
 }
 case "$1" in
    start)
       pid=$(svnserve_pid)
       if [ -n "$pid" ]
         then
-          echo "svnserve for $REPO_ROOT already running with pid: $pid. Started nothing."
+          echo "svnserve already running with pid: $pid. Started nothing."
         else
-         	echo -n "Starting svnserve for $REPO_ROOT"
-          /bin/su - $USER -c "svnserve -d -R -r $REPO_ROOT"
+         	echo -n "Starting svnserve"
+          /bin/su - $USER -c "$START_CMD"
       fi
     	;;
    stop)
       pid=$(svnserve_pid)
       if [ -n "$pid" ]
         then
-    	    echo -n "Shutting down svnserve for $REPO_ROOT"
-        	/bin/su - $USER -c kill $pid
+    	    echo -n "Shutting down svnserve"
+        	/bin/su - $USER -c "kill $pid"
         else
           echo -n "running svnserver for repo $REPO_ROOT not detected. Stopping nothing."
       fi
@@ -35,9 +36,9 @@ case "$1" in
       pid=$(svrserve_pid)
       if [ -n "$pid" ]
         then
-          echo "svnserve for $REPO_ROOT is running with pid: $pid"
+          echo "svnserve is running with pid: $pid"
         else
-          echo "svnserver for $REPO_ROOT not detected"
+          echo "svnserver not detected"
       fi
       ;;
    *)

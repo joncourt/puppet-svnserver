@@ -13,18 +13,19 @@ class svnserver (
 	} ->
 	user {$user:
 		ensure => present,
+        system => true,
 	} ->
 	file {$path:
 		ensure => directory,
-		owner => $user,
-		group => $user,
+		owner  => $user,
+		group  => $user,
 	} ->
 	exec {"create repo at $path":
 		command => "svnadmin create $path",
 		creates => "$path/format",
 		user 	=> $user,
 	} -> 
-	file {"$path/conf/svnserv.conf":
+	file {"$path/conf/svnserve.conf":
 		content => template("svnserver/svnserve.conf.erb"),
 	} ->
 	file {"$path/conf/$password_db":
@@ -32,14 +33,14 @@ class svnserver (
 	}
 	file {"/etc/init.d/svnserve":
 		content => template("svnserver/svnserve.erb"),
-		owner => 'root',
-		group => 'root',
-		mode => 'a+x',
+		owner   => 'root',
+		group   => 'root',
+		mode    => 'a+x',
 	} ->
 	service {"svnserve":
-		ensure => running,
+		ensure     => running,
 		hasrestart => true,
-		hasstatus => false,
-		enable => true,
+		hasstatus  => false,
+		enable     => true,
 	}
 }
