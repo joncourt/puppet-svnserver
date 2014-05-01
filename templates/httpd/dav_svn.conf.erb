@@ -1,0 +1,8 @@
+<Location <%= @http_context %>>
+    DAV svn
+    SVNPath <%= @path %>
+    AuthType <%= @http_auth_type %>
+    AuthName "<%= @http_auth_name %>"
+    AuthUserFile <%= @httpPasswdPath %>
+    Require all granted
+</Location>
