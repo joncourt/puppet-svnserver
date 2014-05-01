@@ -38,7 +38,7 @@ class svnserver (
         owner  => $user,
         group  => $user,
     } ->
-    exec { "chown -R $user:$user $path ": logoutput => true } ->
+    exec { "chown -R $user:$user $path": logoutput => true } ->
     exec { "create repo at $path":
         command => "svnadmin create $path",
         creates => "$path/format",
@@ -91,17 +91,13 @@ class svnserver (
         class { 'apache::mod::auth_basic': } ->
         class { 'apache::mod::dav_svn': } ->
         apache::mod {['authz_user', 'authz_svn', 'authn_core', 'authn_file']:} ->
-
-       # file { '/etc/apache2/mods-available/dav_svn.conf': content => template('svnserver/httpd/dav_svn.conf.erb'), } ->
         file { $createPasswdScriptPath:
             content => template('svnserver/httpd/create_htpasswd.sh.erb'),
             mode    => 'a+x',
         } ->
         exec { "$createPasswdScriptPath ": logoutput => false, } ->
         exec { "rm $createPasswdScriptPath": logoutput => false } ->
-
         exec { "chown -R www-data:$user $path ": logoutput => true } ->
-
-        exec { "chmod -R 774 $path ": logoutput => true }
+        exec { "chmod -R 774 $path ": logoutput => true, require => Exec["chown -R $user:$user $path"], }
     }
 }
